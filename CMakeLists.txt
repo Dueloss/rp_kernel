@@ -13,8 +13,9 @@ include_directories(include)
 
 # 📂 Define Source Files
 set(KERNEL_SOURCES
-        src/main.cpp
         include/rp_types.h
+        include/rp_plugin.h
+        include/rp_i_plugin.h
 )
 
 # 🚀 Build the Heartbeat

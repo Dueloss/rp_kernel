@@ -24,6 +24,16 @@ Thank you for your interest in the Red Plasma Kernel! To maintain our "Lego-Styl
     Types: Use only rp_ prefixed types (e.g., rp_u32, rp_fixed) from the SDK to ensure cross-platform portability.
 
     Physics: Logic must adhere to the fixed Δt "Heartbeat" and support Evolutionary Calibration.
+    
+⚖️ Error Code Standards ("Zip Codes")
+
+    Kernel Contributions: Use only the -100 to -999 range for internal logic.
+
+    No Hardware Leaks: Do not define any error codes -1000 or below within the Kernel source.
+
+    Pass-through Logic: If your Kernel code interacts with a plugin, it must treat any result ≤−1000 as an opaque "Plugin Implementation" error.
+
+    Documentation: If you create a new Kernel error code (e.g., -105 for a specific Heartbeat sync failure), you must document it in the internal RP_Result registry.
 
 🚀 Submission Process
 

@@ -160,51 +160,43 @@
 //
 //
 
+/*
+ * Red Plasma Kernel (RP_Kernel)
+ * * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at 
+ * https://mozilla.org/MPL/2.0/.
+ *
+ * Part of the "Heartbeat" Core.
+ */
 //
 // Created by drmcfree on 25/03/2026.
 //
 
+#ifndef REDPLASMAKERNEL_RP_PLUGIN_H
+#define REDPLASMAKERNEL_RP_PLUGIN_H
 #include "rp_types.h"
-#include "rp_i_plugin.h"
-#include  <vector>
 
-rp_result KernelRequestThread(RpUpdate EntryPoint, rp_native priority)
-{
-    if (!EntryPoint)
-    {
-        return RP_ERR_MANDATE_FAIL;
-    }
-    /* * TODO: On Fedora, use std::thread.
-     * TOD: On 16-bit, add to a cooperative task list.
-     * For now, we return SUCCESS to allow the heartbeat to continue.
+#ifdef __cplusplus
+extern "C" {
+#endif
+    /**
+     * @brief The Plugin Lifecycle Contract
+     * All plugins must implement these to be Red Plasma compatible
      */
-    return RP_SUCCESS;
+
+    // 1. Initialize: Setup hardware/buffer. Returns RP_SUCCESS or < 0.
+    typedef rp_result (*RpInit)(void);
+
+    // 2. Update: The per-frame logic. Must be high-performance.
+    typedef rp_result (*RpUpdate)(void);
+
+    // 3. Shutdown: Clean up memory/state before exit.
+    typedef rp_result (*RpShutdown)(void);
+
+    // 4. Interrupt: Handles emergency stops or hardware pauses.
+    typedef rp_result (*RpInterrupt)(rp_native reason);
+
+#ifdef __cplusplus
 }
-
-static rp_host g_kernel_host = {
-    .RequestThread = KernelRequestThread
-};
-
-int main(int argc, const char * argv[])
-{
-    rp_passport passport = {0};
-
-    passport.Host = &g_kernel_host;
-
-    if (passport.Initialize)
-    {
-        rp_result res = passport.Initialize();
-        if (res < RP_SUCCESS)
-        {
-            return res;
-        }
-    }
-
-    while (true)
-    {
-        if (passport.Update)
-        {
-            passport.Update();
-        }
-    }
-}
+#endif
+#endif //REDPLASMAKERNEL_RP_PLUGIN_H

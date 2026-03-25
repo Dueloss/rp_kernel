@@ -160,51 +160,50 @@
 //
 //
 
+/*
+ * Red Plasma Kernel (RP_Kernel)
+ * * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at 
+ * https://mozilla.org/MPL/2.0/.
+ *
+ * Part of the "Heartbeat" Core.
+ */
 //
 // Created by drmcfree on 25/03/2026.
 //
 
+#ifndef REDPLASMAKERNEL_RP_I_PLUGIN_H
+#define REDPLASMAKERNEL_RP_I_PLUGIN_H
+#include "rp_plugin.h"
 #include "rp_types.h"
-#include "rp_i_plugin.h"
-#include  <vector>
 
-rp_result KernelRequestThread(RpUpdate EntryPoint, rp_native priority)
-{
-    if (!EntryPoint)
+#ifdef __cplusplus
+extern "C" {
+#endif
+    typedef struct
     {
-        return RP_ERR_MANDATE_FAIL;
-    }
-    /* * TODO: On Fedora, use std::thread.
-     * TOD: On 16-bit, add to a cooperative task list.
-     * For now, we return SUCCESS to allow the heartbeat to continue.
+        /** * @brief The Plugin calls this to say "I need a thread."
+         * The Kernel decides if it can fulfill this based on the threads available.
+         * */
+        rp_result (*RequestThread)(RpUpdate EntryPoint, rp_native priority);
+    } rp_host;
+    typedef struct
+    {
+        rp_u16 MajorVersion;
+        rp_u16 MinorVersion;
+        RpInit Initialize;
+        RpUpdate Update;
+        RpShutdown Shutdown;
+        RpInterrupt Interrupt;
+        rp_host* Host;
+    } rp_passport;
+
+    /** @brief The single entry point function type.
+     * The Plugin exposes an extern "C" function of this type.
      */
-    return RP_SUCCESS;
+    typedef rp_result (*RpGetPassport)(rp_passport *outPassport);
+# ifdef  __cplusplus
 }
+#endif
 
-static rp_host g_kernel_host = {
-    .RequestThread = KernelRequestThread
-};
-
-int main(int argc, const char * argv[])
-{
-    rp_passport passport = {0};
-
-    passport.Host = &g_kernel_host;
-
-    if (passport.Initialize)
-    {
-        rp_result res = passport.Initialize();
-        if (res < RP_SUCCESS)
-        {
-            return res;
-        }
-    }
-
-    while (true)
-    {
-        if (passport.Update)
-        {
-            passport.Update();
-        }
-    }
-}
+#endif //REDPLASMAKERNEL_RP_I_PLUGIN_H

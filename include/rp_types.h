@@ -175,8 +175,10 @@
 #ifndef RP_TYPES_H
 #define RP_TYPES_H
 
+#include <stddef.h> // NOLINT(modernize-deprecated-headers)
+
 typedef unsigned char rp_u8;
-typedef unsigned short rp_u16
+typedef unsigned short rp_u16;
 typedef unsigned long rp_u32;
 
 typedef size_t rp_size;
@@ -184,7 +186,8 @@ typedef int rp_native;
 /**
  * @brief Tiered Error System (The "Zip Code")
  */
-enum RP_RESULT : rp_native
+typedef rp_native rp_result;
+enum
 {
     RP_SUCCESS = 0,
 
